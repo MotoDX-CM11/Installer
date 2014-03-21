@@ -1,0 +1,14 @@
+Bugs:
+Alot
+
+Working:
+Root Button
+Download Rom Button
+Reboot Recovery Button
+
+Todo:
+Fix a methood to copying a folder from the asset folder to /system/install bootmenu + chroot
+Simple "Reboot" button fix
+Get rid of the extra button
+
+By: Aaahh Ahh
