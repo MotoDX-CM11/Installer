@@ -1,11 +1,9 @@
 package com.Aaahh.myapplication2.app;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -17,13 +15,10 @@ import android.view.ViewGroup;
 
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
 
 import static android.content.Intent.ACTION_VIEW;
 
@@ -63,22 +58,6 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-    }
-
     public void buttonOnClick1(View v1) throws IOException, InterruptedException {
         AssetManager assetManager = getAssets();
         InputStream in;
@@ -112,7 +91,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void buttonOnClick3(View v3) {
-        String s = getFilesDir().getAbsolutePath();
+        /*
+       String s = getFilesDir().getAbsolutePath();
         String s1 = (new StringBuilder(String.valueOf(s))).append("/busybox").toString();
         String s3 = (new StringBuilder(String.valueOf(s))).append("/system").toString();
         String s4 = (new StringBuilder(String.valueOf(s))).append("/bootmenu").toString();
@@ -149,6 +129,7 @@ public class MainActivity extends ActionBarActivity {
             exception.printStackTrace();
             return;
         }
+        */
     }
 
     public void buttonOnClick4(View v4) {
@@ -165,6 +146,7 @@ public class MainActivity extends ActionBarActivity {
         } finally {
             if (p != null) {
                 p.destroy();
+                Log.d("MainActivity", "su was not granted");
             }
         }
     }
@@ -183,92 +165,42 @@ public class MainActivity extends ActionBarActivity {
         } finally {
             if (p != null) {
                 p.destroy();
+                Log.d("MainActivity", "su was not granted");
             }
-        }
-    }
-
-    public static void copyFdToFile(FileDescriptor src, File dst) throws IOException {
-        FileChannel inChannel = new FileInputStream(src).getChannel();
-        FileChannel outChannel = new FileOutputStream(dst).getChannel();
-        try {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        } finally {
-            if (inChannel != null)
-                inChannel.close();
-            if (outChannel != null)
-                outChannel.close();
         }
     }
 
     public void buttonOnClick6(View v6) {
-        copyFilesToSdCard();
-    }
-    static String extStorageDirectory =  Environment.getExternalStorageDirectory().toString();
-    final static String TARGET_BASE_PATH = extStorageDirectory+"/Android/data/";
-
-    private void copyFilesToSdCard() {
-        copyFileOrDir("");
-    }
-
-    private void copyFileOrDir(String path) {
-        AssetManager assetManager = this.getAssets();
-        String assets[] = null;
+        Process p = null;
         try {
-            Log.i("tag", "copyFileOrDir() "+path);
-            assets = assetManager.list(path);
-            if (assets.length == 0) {
-                copyFile(path);
-            } else {
-                String fullPath =  TARGET_BASE_PATH + path;
-                Log.i("tag", "path="+fullPath);
-                File dir = new File(fullPath);
-                if (!dir.exists())
-                    if (!dir.mkdirs());
-                Log.i("tag", "could not create dir "+fullPath);
-                for (int i = 0; i < assets.length; ++i) {
-                    String p;
-                    if (path.equals(""))
-                        p = "";
-                    else
-                        p = path + "/";
-
-                    copyFileOrDir( p + assets[i]);
-                }
+            p = Runtime.getRuntime().exec("sudo su");
+            p = Runtime.getRuntime().exec("sleep 10");
+            OutputStream os = p.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(os);
+            dos.writeBytes("reboot" + "\n");
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (p != null) {
+                p.destroy();
             }
-        } catch (IOException ex) {
-            Log.e("tag", "I/O Exception", ex);
         }
     }
 
-    private void copyFile(String filename) {
-        AssetManager assetManager = this.getAssets();
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
 
-        InputStream in = null;
-        OutputStream out = null;
-        String newFileName = null;
-        try {
-            Log.i("tag", "copyFile() "+filename);
-            in = assetManager.open(filename);
-            if (filename.endsWith(".jpg")) // extension was added to avoid compression on APK file
-                newFileName = TARGET_BASE_PATH + filename.substring(0, filename.length()-4);
-            else
-                newFileName = TARGET_BASE_PATH + filename;
-            out = new FileOutputStream(newFileName);
-
-            byte[] buffer = new byte[1024];
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
-            }
-            in.close();
-            in = null;
-            out.flush();
-            out.close();
-            out = null;
-        } catch (Exception e) {
-            Log.e("tag", "Exception in copyFile() of "+newFileName);
-            Log.e("tag", "Exception in copyFile() "+e.toString());
+        public PlaceholderFragment() {
         }
 
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            return rootView;
+        }
     }
 }
