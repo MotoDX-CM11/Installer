@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,6 +58,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void buttonOnClick1(View v1) throws IOException, InterruptedException {
+        try {
+            Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage("com.alephzain.framaroot");
+            startActivity(LaunchIntent);
+        } catch (Exception e) {
         AssetManager assetManager = getAssets();
         InputStream in;
         OutputStream out;
@@ -75,6 +78,7 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(new File("/sdcard/framaroot.apk")), "application/vnd.android.package-archive");
         startActivityForResult(intent, 1);
+    }
     }
 
     protected void onActivityResult(int reqCode, int resultCode, Intent intent) {
@@ -124,7 +128,46 @@ public class MainActivity extends ActionBarActivity {
         {
             android.app.AlertDialog.Builder builder2 = new android.app.AlertDialog.Builder(MainActivity.this);
             builder2.setPositiveButton(0x104000a, null);
-            builder2.setTitle("Failure");
+            builder2.setTitle("Failure");              public void buttonOnClick5(View v5) {
+        Process p = null;
+        try {
+            p = Runtime.getRuntime().exec("su -c reboot recovery;");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {                         public void buttonOnClick5(View v5) {
+        Process p = null;
+        try {
+            p = Runtime.getRuntime().exec("su -c reboot recovery;");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (p != null) {
+                p.destroy();               public void buttonOnClick5(View v5) {
+        Process p = null;
+        try {
+            p = Runtime.getRuntime().exec("su -c reboot recovery;");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (p != null) {
+                p.destroy();
+                Log.d("MainActivity", "su was not granted");
+            }
+        }
+        }
+
+                Log.d("MainActivity", "su was not granted");
+            }
+        }
+        }
+
+            if (p != null) {
+                p.destroy();
+                Log.d("MainActivity", "su was not granted");
+            }
+        }
+        }
+
             builder2.setMessage(exception.getMessage());
             exception.printStackTrace();
             return;
@@ -135,12 +178,7 @@ public class MainActivity extends ActionBarActivity {
     public void buttonOnClick4(View v4) {
         Process p = null;
         try {
-            p = Runtime.getRuntime().exec("su");
-            p = Runtime.getRuntime().exec("sleep 10");
-            OutputStream os = p.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(os);
-            dos.writeBytes("reboot recovery" + "\n");
-            dos.flush();
+            p = Runtime.getRuntime().exec("su -c reboot;");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -154,37 +192,13 @@ public class MainActivity extends ActionBarActivity {
     public void buttonOnClick5(View v5) {
         Process p = null;
         try {
-            p = Runtime.getRuntime().exec("su");
-            p = Runtime.getRuntime().exec("sleep 10");
-            OutputStream os = p.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(os);
-            dos.writeBytes("reboot" + "\n");
-            dos.flush();
+            p = Runtime.getRuntime().exec("su -c reboot recovery;");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (p != null) {
                 p.destroy();
                 Log.d("MainActivity", "su was not granted");
-            }
-        }
-    }
-
-    public void buttonOnClick6(View v6) {
-        //(TODO: check if this works, and fix the above if so)
-        Process p = null;
-        try {
-            p = Runtime.getRuntime().exec("sudo su");
-            p = Runtime.getRuntime().exec("sleep 10");
-            OutputStream os = p.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(os);
-            dos.writeBytes("reboot" + "\n");
-            dos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (p != null) {
-                p.destroy();
             }
         }
     }
