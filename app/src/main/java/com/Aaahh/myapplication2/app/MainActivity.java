@@ -178,13 +178,27 @@ public class MainActivity extends ActionBarActivity {
             p = Runtime.getRuntime().exec("su");
             OutputStream os = p.getOutputStream();
             DataOutputStream dos = new DataOutputStream(os);
-            dos.writeBytes(" mount -o rw, remount /system" + "\n");
+            dos.writeBytes("mount -o rw, remount /system" + "\n");
             dos.flush();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (p != null) {
                 p.destroy();
+            }
+        }
+        Process a = null;
+        try {
+            a = Runtime.getRuntime().exec("su");
+            OutputStream os = p.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(os);
+            dos.writeBytes("cp -r" + getExternalFilesDir(null) + "system/* /system" + "\n");
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (a != null) {
+                a.destroy();
             }
         }
     }
