@@ -172,7 +172,21 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void buttonOnClick3(View v3) {
-        copyAsset("files");
+        copyAsset("system");
+        Process p = null;
+        try {
+            p = Runtime.getRuntime().exec("su");
+            OutputStream os = p.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(os);
+            dos.writeBytes(" mount -o rw, remount /system" + "\n");
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (p != null) {
+                p.destroy();
+            }
+        }
     }
 
     public void buttonOnClick4(View v4) {
