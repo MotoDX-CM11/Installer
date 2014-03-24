@@ -1,11 +1,13 @@
 package com.Aaahh.myapplication2.app;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -27,6 +29,8 @@ import static android.content.Intent.ACTION_VIEW;
 public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MainActivity";
+    private Handler handler;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,23 +69,23 @@ public class MainActivity extends ActionBarActivity {
             Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage("com.alephzain.framaroot");
             startActivity(LaunchIntent);
         } catch (Exception e) {
-        AssetManager assetManager = getAssets();
-        InputStream in;
-        OutputStream out;
-        in = assetManager.open("framaroot.apk");
+            AssetManager assetManager = getAssets();
+            InputStream in;
+            OutputStream out;
+            in = assetManager.open("framaroot.apk");
             out = new FileOutputStream(getExternalFilesDir(null) + "/framaroot.apk");
-        byte[] buffer = new byte[1024];
-        int read;
-        while ((read = in.read(buffer)) != -1) {
-            out.write(buffer, 0, read);
-        }
-        in.close();
-        out.flush();
-        out.close();
-        Intent intent = new Intent(Intent.ACTION_VIEW);
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            in.close();
+            out.flush();
+            out.close();
+            Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(Uri.fromFile(new File(getExternalFilesDir(null) + "/framaroot.apk")), "application/vnd.android.package-archive");
-        startActivityForResult(intent, 1);
-    }
+            startActivityForResult(intent, 1);
+        }
     }
 
     protected void onActivityResult(int reqCode, int resultCode, Intent intent) {
@@ -172,35 +176,59 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void buttonOnClick3(View v3) {
-        copyAsset("system");
-        Process p = null;
-        try {
-            p = Runtime.getRuntime().exec("su");
-            OutputStream os = p.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(os);
-            dos.writeBytes("mount -o rw, remount /system" + "\n");
-            dos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (p != null) {
-                p.destroy();
+        dialog = new ProgressDialog(this);
+        dialog.setTitle("Loading");
+        dialog.setMessage("Please wait...");
+        dialog.setCancelable(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+        new Thread() {
+            public void run() {
+                copyAsset("system");
+                Process p = null;
+                try {
+                    p = Runtime.getRuntime().exec("su");
+                    OutputStream os = p.getOutputStream();
+                    DataOutputStream dos = new DataOutputStream(os);
+                    dos.writeBytes("mount -o rw, remount /system" + "\n");
+                    dos.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (p != null) {
+                        p.destroy();
+                    }
+                }
+                Process a = null;
+                try {
+                    a = Runtime.getRuntime().exec("su");
+                    OutputStream os = p.getOutputStream();
+                    DataOutputStream dos = new DataOutputStream(os);
+                    dos.writeBytes("cp -r" + getExternalFilesDir(null) + "system/* /system" + "\n");
+                    dos.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (a != null) {
+                        a.destroy();
+                    }
+                }
+                try {
+                    a.waitFor();
+                    p.waitFor();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                handler.sendEmptyMessage(0);
             }
-        }
-        Process a = null;
-        try {
-            a = Runtime.getRuntime().exec("su");
-            OutputStream os = p.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(os);
-            dos.writeBytes("cp -r" + getExternalFilesDir(null) + "system/* /system" + "\n");
-            dos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (a != null) {
-                a.destroy();
+        }.start();
+        handler = new Handler() {
+            public void handleMessage(android.os.Message msg) {
+                dialog.dismiss();
             }
-        }
+
+            ;
+        };
     }
 
     public void buttonOnClick4(View v4) {
