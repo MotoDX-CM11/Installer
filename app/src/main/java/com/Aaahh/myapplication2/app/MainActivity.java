@@ -195,8 +195,14 @@ public class MainActivity extends ActionBarActivity {
                 //Process b = null;
                 Process c = null;
                 Process d = null;
-                Process f = null;
+                //  Process f = null;
                 Process g = null;
+                Process h = null;
+                Process i = null;
+                Process j = null;
+                Process k = null;
+                Process l = null;
+                Process m = null;
                 try {
                     p = Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o rw,remount /dev/block/mmcblk1p21 /system"});
                 } catch (IOException e) {
@@ -206,8 +212,14 @@ public class MainActivity extends ActionBarActivity {
                     a = Runtime.getRuntime().exec(new String[]{"su", "-c", "cp", "-r " + getExternalFilesDir(null) + "/system/* /system"});
                     c = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu"});
                     d = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu/*"});
-                    f = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu/*"});
-                    g = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bin/bootmenu", "/system/bin/logwrapper"});
+                    g = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bin/logwrapper", "/system/bin/bootmenu"});
+                    h = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate1.png", "indeterminate.png"});
+                    i = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate2.png", "indeterminate.png"});
+                    j = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate3.png", "indeterminate.png"});
+                    k = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate4.png", "indeterminate.png"});
+                    l = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate5.png", "indeterminate.png"});
+                    m = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate6.png", "indeterminate.png"});
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -216,8 +228,13 @@ public class MainActivity extends ActionBarActivity {
                     a.waitFor();
                     c.waitFor();
                     d.waitFor();
-                    f.waitFor();
                     g.waitFor();
+                    h.waitFor();
+                    i.waitFor();
+                    j.waitFor();
+                    k.waitFor();
+                    l.waitFor();
+                    m.waitFor();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
