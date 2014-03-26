@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -184,38 +183,41 @@ public class MainActivity extends ActionBarActivity {
         dialog.show();
         new Thread() {
             public void run() {
+                //cheap fix for now
                 copyAsset("system");
+                try {
+                    sleep(60);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 Process p = null;
-                try {
-                    p = Runtime.getRuntime().exec("su");
-                    OutputStream os = p.getOutputStream();
-                    DataOutputStream dos = new DataOutputStream(os);
-                    dos.writeBytes("mount -o rw, remount /system" + "\n");
-                    dos.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (p != null) {
-                        p.destroy();
-                    }
-                }
                 Process a = null;
+                //Process b = null;
+                Process c = null;
+                Process d = null;
+                Process f = null;
+                Process g = null;
                 try {
-                    a = Runtime.getRuntime().exec("su");
-                    OutputStream os = p.getOutputStream();
-                    DataOutputStream dos = new DataOutputStream(os);
-                    dos.writeBytes("cp -r" + getExternalFilesDir(null) + "system/* /system" + "\n");
-                    dos.flush();
+                    p = Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o rw,remount /dev/block/mmcblk1p21 /system"});
                 } catch (IOException e) {
                     e.printStackTrace();
-                } finally {
-                    if (a != null) {
-                        a.destroy();
-                    }
                 }
                 try {
-                    a.waitFor();
+                    a = Runtime.getRuntime().exec(new String[]{"su", "-c", "cp", "-r " + getExternalFilesDir(null) + "/system/* /system"});
+                    c = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu"});
+                    d = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu/*"});
+                    f = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu/*"});
+                    g = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bin/bootmenu", "/system/bin/logwrapper"});
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
                     p.waitFor();
+                    a.waitFor();
+                    c.waitFor();
+                    d.waitFor();
+                    f.waitFor();
+                    g.waitFor();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -232,29 +234,35 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void buttonOnClick4(View v4) {
-        Process p = null;
         try {
-            p = Runtime.getRuntime().exec("su -c reboot");
+            Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot recovery"});
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (p != null) {
-                p.destroy();
-                Log.d("MainActivity", "su was not granteds");
-            }
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Rebooting Failed")
+                    .setMessage("Do you want to try again?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
+                                Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot recovery"});
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
         }
     }
 
     public void buttonOnClick5(View v5) {
-        Process p = null;
         try {
-            p = Runtime.getRuntime().exec("su -c reboot recovery;");
+            Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot"});
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (p != null) {
-                p.destroy();
-                Log.d("MainActivity", "su was not granted");
                 new AlertDialog.Builder(this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Rebooting Failed")
@@ -262,7 +270,11 @@ public class MainActivity extends ActionBarActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                finish();
+                                try {
+                                    Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot"});
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                         })
@@ -270,24 +282,6 @@ public class MainActivity extends ActionBarActivity {
                         .show();
             }
         }
-    }
-
-    public void buttonOnClick6(View v6) {
-        Process p = null;
-        try {
-            p = Runtime.getRuntime().exec("su");
-            OutputStream os = p.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(os);
-            dos.writeBytes("reboot" + "\n");
-            dos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (p != null) {
-                p.destroy();
-            }
-        }
-    }
 
     /**
      * A placeholder fragment containing a simple view.
