@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.StatFs;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -40,8 +42,8 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        checksd();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -61,6 +63,48 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void checksd() {
+        Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+        if (isSDPresent) {
+            StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+            long bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
+            long megAvailable = bytesAvailable / 1048576;
+            System.out.println("Megs :" + megAvailable);
+            if (megAvailable >= 11) {
+
+            } else {
+                dialog = new ProgressDialog(this);
+                dialog.setTitle("Not Enough Available Space on SDCard ");
+                dialog.setMessage("Please make more room and restart");
+                dialog.setCancelable(false);
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                dialog.show();
+            }
+        } else {
+            dialog = new ProgressDialog(this);
+            dialog.setTitle("SDCard Unavailable");
+            dialog.setMessage("Please insert one and/or unplug your usb cable");
+            dialog.setCancelable(false);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.show();
+            new Thread() {
+                public void waitforsd() {
+                    Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+                    if (isSDPresent) {
+                        handler.sendEmptyMessage(0);
+                    } else {
+                        waitforsd();
+                    }
+                }
+            }.start();
+            handler = new Handler() {
+                public void handleMessage(android.os.Message msg) {
+                    dialog.dismiss();
+                }
+            };
+        }
     }
 
     public void buttonOnClick1(View v1) throws IOException, InterruptedException {
@@ -121,7 +165,7 @@ public class MainActivity extends ActionBarActivity {
      *
      * @param path Path to asset, relative to app's assets directory.
      */
-    private void copyAsset(String path) {
+    private boolean copyAsset(String path) {
         AssetManager manager = getAssets();
 
         // If we have a directory, we make it and recurse. If a file, we copy its
@@ -148,6 +192,7 @@ public class MainActivity extends ActionBarActivity {
         } catch (IOException e) {
             copyFileAsset(path);
         }
+        return true;
     }
 
     /**
@@ -174,7 +219,16 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public void buttonOnClick3(View v3) {
+    public void buttonOnClick3() {
+        copyAsset("system");
+        if (copyAsset("system") == true) {
+            buttonOnClick3PartTwo();
+        } else {
+            buttonOnClick3();
+        }
+    }
+
+    public void buttonOnClick3PartTwo() {
         dialog = new ProgressDialog(this);
         dialog.setTitle("Loading");
         dialog.setMessage("Please wait...");
@@ -183,8 +237,6 @@ public class MainActivity extends ActionBarActivity {
         dialog.show();
         new Thread() {
             public void run() {
-                //cheap fix for now
-                copyAsset("system");
                 try {
                     sleep(60);
                 } catch (InterruptedException e) {
@@ -212,13 +264,13 @@ public class MainActivity extends ActionBarActivity {
                     a = Runtime.getRuntime().exec(new String[]{"su", "-c", "cp", "-r " + getExternalFilesDir(null) + "/system/* /system"});
                     c = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu"});
                     d = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu/*"});
-                    g = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bin/logwrapper", "/system/bin/bootmenu"});
-                    h = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate1.png", "indeterminate.png"});
-                    i = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate2.png", "indeterminate.png"});
-                    j = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate3.png", "indeterminate.png"});
-                    k = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate4.png", "indeterminate.png"});
-                    l = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate5.png", "indeterminate.png"});
-                    m = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate6.png", "indeterminate.png"});
+                    g = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/binary/bootmenu", "/system/bin/logwrapper"});
+                    h = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate1.png"});
+                    i = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate2.png"});
+                    j = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate3.png"});
+                    k = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate4.png"});
+                    l = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate5.png"});
+                    m = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate6.png"});
 
                 } catch (IOException e) {
                     e.printStackTrace();
