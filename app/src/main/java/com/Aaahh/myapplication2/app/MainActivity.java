@@ -32,7 +32,7 @@ import static android.content.Intent.ACTION_VIEW;
 
 public class MainActivity extends ActionBarActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String Main = "MainActivity";
     private Handler handler;
     private ProgressDialog dialog;
 
@@ -157,9 +157,14 @@ public class MainActivity extends ActionBarActivity {
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            finish();
+                            try {
+                                buttonOnClick1(null);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
-
                     })
                     .setNegativeButton("No", null)
                     .show();
@@ -228,7 +233,7 @@ public class MainActivity extends ActionBarActivity {
             out.close();
             in.close();
         } catch (IOException e) {
-            Log.e("MainActivity", "exception", e);
+            Log.e(Main, "exception", e);
         }
     }
 
@@ -322,7 +327,7 @@ public class MainActivity extends ActionBarActivity {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Rebooting Failed")
-                    .setMessage("Do you want to try again?")
+                    .setMessage("Did you grant root?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -347,7 +352,7 @@ public class MainActivity extends ActionBarActivity {
                 new AlertDialog.Builder(this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Rebooting Failed")
-                        .setMessage("Do you want to try again?")
+                        .setMessage("Did you grant root?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

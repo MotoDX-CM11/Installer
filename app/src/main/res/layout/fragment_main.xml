@@ -38,7 +38,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:onClick="buttonOnClick2"
-        android:text="Download Rom" />
+        android:text="Download Rom and Gapps" />
 
     <Button
         android:id="@+id/button4"
