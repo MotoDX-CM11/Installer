@@ -233,21 +233,22 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void buttonOnClick3() {
-        copyAsset("system");
-        if (copyAsset("system") == true) {
-            buttonOnClick3PartTwo();
-        } else {
-            buttonOnClick3();
-        }
-    }
-
-    public void buttonOnClick3PartTwo() {
         dialog = new ProgressDialog(this);
         dialog.setTitle("Loading");
         dialog.setMessage("Please wait...");
         dialog.setCancelable(false);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
+        copyAsset("system");
+        final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        exec.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                if (copyAsset("system") == true) {
+                    exec.shutdown();
+                }
+            }
+        }, 0, 5, TimeUnit.SECONDS);
         new Thread() {
             public void run() {
                 try {
@@ -310,8 +311,6 @@ public class MainActivity extends ActionBarActivity {
             public void handleMessage(android.os.Message msg) {
                 dialog.dismiss();
             }
-
-            ;
         };
     }
 
