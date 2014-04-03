@@ -237,7 +237,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public void buttonOnClick3() {
+    public void buttonOnClick3(View v3) {
         dialog = new ProgressDialog(this);
         dialog.setTitle("Loading");
         dialog.setMessage("Please wait...");
@@ -245,12 +245,12 @@ public class MainActivity extends ActionBarActivity {
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
         copyAsset("system");
-        final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-        exec.scheduleAtFixedRate(new Runnable() {
+        final ScheduledExecutorService execq = Executors.newSingleThreadScheduledExecutor();
+        execq.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 if (copyAsset("system") == true) {
-                    exec.shutdown();
+                    execq.shutdown();
                 }
             }
         }, 0, 5, TimeUnit.SECONDS);
