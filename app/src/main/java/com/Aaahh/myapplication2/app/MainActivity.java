@@ -261,7 +261,7 @@ public class MainActivity extends ActionBarActivity {
                 //Process b = null;
                 Process c = null;
                 Process d = null;
-                //  Process f = null;
+                //Process f = null;
                 Process g = null;
                 Process h = null;
                 Process i = null;
@@ -278,7 +278,7 @@ public class MainActivity extends ActionBarActivity {
                     a = Runtime.getRuntime().exec(new String[]{"su", "-c", "cp", "-r " + getExternalFilesDir(null) + "/system/* /system"});
                     c = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu"});
                     d = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu/*"});
-                    g = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/binary/bootmenu", "/system/bin/logwrapper"});
+                    g = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bin/logwrapper", "system/bin/bootmenu"});
                     h = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate1.png"});
                     i = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate2.png"});
                     j = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate3.png"});
