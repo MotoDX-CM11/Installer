@@ -24,6 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static android.content.Intent.ACTION_VIEW;
 
@@ -73,39 +76,49 @@ public class MainActivity extends ActionBarActivity {
             long megAvailable = bytesAvailable / 1048576;
             System.out.println("Megs :" + megAvailable);
             if (megAvailable >= 11) {
-
             } else {
                 dialog = new ProgressDialog(this);
                 dialog.setTitle("Not Enough Available Space on SDCard ");
-                dialog.setMessage("Please make more room and restart");
+                dialog.setMessage("Please free at least 12MB on your sdcard. ");
                 dialog.setCancelable(false);
                 dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 dialog.show();
+                final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+                exec.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+                        long bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
+                        long megAvailable = bytesAvailable / 1048576;
+                        System.out.println("Megs :" + megAvailable);
+                        if (megAvailable >= 11) {
+                            dialog.dismiss();
+                            exec.shutdown();
+                        }
+                    }
+                }, 0, 5, TimeUnit.SECONDS);
             }
         } else {
             dialog = new ProgressDialog(this);
             dialog.setTitle("SDCard Unavailable");
-            dialog.setMessage("Please insert one and/or unplug your usb cable");
+            dialog.setMessage("Please insert an sdcard and/or unplug your usb cable.");
             dialog.setCancelable(false);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.show();
-            new Thread() {
-                public void waitforsd() {
+            final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+            exec.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
                     Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                     if (isSDPresent) {
-                        handler.sendEmptyMessage(0);
-                    } else {
-                        waitforsd();
+                        dialog.dismiss();
+                        exec.shutdown();
                     }
-                }
-            }.start();
-            handler = new Handler() {
-                public void handleMessage(android.os.Message msg) {
-                    dialog.dismiss();
-                }
-            };
+                    }
+            }, 0, 5, TimeUnit.SECONDS);
         }
     }
+
 
     public void buttonOnClick1(View v1) throws IOException, InterruptedException {
         try {
