@@ -80,7 +80,7 @@ public class MainActivity extends ActionBarActivity {
                 dialog = new ProgressDialog(this);
                 dialog.setTitle("Not Enough Available Space on SDCard ");
                 dialog.setMessage("Please free at least 12MB on your sdcard. ");
-                dialog.setCancelable(false);
+                dialog.setCancelable(true);
                 dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 dialog.show();
                 final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
@@ -101,8 +101,34 @@ public class MainActivity extends ActionBarActivity {
         } else {
             dialog = new ProgressDialog(this);
             dialog.setTitle("SDCard Unavailable");
-            dialog.setMessage("Please insert an sdcard and/or unplug your usb cable.");
-            dialog.setCancelable(false);
+            dialog.setMessage("Would you like to try to continue without an SDCard?");
+            dialog.setButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Process p = null;
+                    Boolean fake = null;
+                    try {
+                        p = Runtime.getRuntime().exec(new String[]{"su", "-c", "mkdir /storage/sdcard0/tmpforfake"});
+                        wait(50);
+                        fake = true;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException el) {
+                        el.printStackTrace();
+                    } finally {
+                        if (fake == true) {
+                            Thread.currentThread().stop();
+                        }
+                    }
+                }
+            });
+            dialog.setButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialog = new ProgressDialog(null);
+                    dialog.setTitle("SDCard Unavailable");
+                    dialog.setMessage("Please insert an SDCard and/or unplug your usb cable.");
+                    dialog.setCancelable(true);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.show();
             final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
@@ -116,6 +142,8 @@ public class MainActivity extends ActionBarActivity {
                     }
                     }
             }, 0, 5, TimeUnit.SECONDS);
+                }
+            });
         }
     }
 
@@ -263,10 +291,8 @@ public class MainActivity extends ActionBarActivity {
                 }
                 Process p = null;
                 Process a = null;
-                //Process b = null;
                 Process c = null;
                 Process d = null;
-                //Process f = null;
                 Process g = null;
                 Process h = null;
                 Process i = null;
@@ -274,22 +300,28 @@ public class MainActivity extends ActionBarActivity {
                 Process k = null;
                 Process l = null;
                 Process m = null;
+                boolean system = false;
+
                 try {
                     p = Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o rw,remount /dev/block/mmcblk1p21 /system"});
+                    system = true;
                 } catch (IOException e) {
                     e.printStackTrace();
+                    system = false;
                 }
                 try {
-                    a = Runtime.getRuntime().exec(new String[]{"su", "-c", "cp", "-r " + getExternalFilesDir(null) + "/system/* /system"});
-                    c = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu"});
-                    d = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu/*"});
-                    g = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bin/logwrapper", "system/bin/bootmenu"});
-                    h = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate1.png"});
-                    i = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate2.png"});
-                    j = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate3.png"});
-                    k = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate4.png"});
-                    l = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate5.png"});
-                    m = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate6.png"});
+                    if (system == true) {
+                        a = Runtime.getRuntime().exec(new String[]{"su", "-c", "cp", "-r " + getExternalFilesDir(null) + "/system/* /system"});
+                        c = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu"});
+                        d = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "777", "/system/bootmenu/*"});
+                        g = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bin/logwrapper", "system/bin/bootmenu"});
+                        h = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate1.png"});
+                        i = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate2.png"});
+                        j = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate3.png"});
+                        k = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate4.png"});
+                        l = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate5.png"});
+                        m = Runtime.getRuntime().exec(new String[]{"su", "-c", "ln", "-s", "/system/bootmenu/images/indeterminate.png", "/system/bootmenu/images/indeterminate6.png"});
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();
