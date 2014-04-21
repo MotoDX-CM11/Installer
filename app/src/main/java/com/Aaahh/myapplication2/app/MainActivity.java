@@ -138,6 +138,7 @@ public class MainActivity extends ActionBarActivity {
                     Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                     if (isSDPresent) {
                         dialog.dismiss();
+                        checksd();
                         exec.shutdown();
                     }
                     }
