@@ -39,6 +39,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e(Main, "First");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
@@ -47,6 +48,7 @@ public class MainActivity extends ActionBarActivity {
                     .commit();
         }
         checksd();
+        Log.e(Main, "1");
     }
 
 
@@ -64,13 +66,11 @@ public class MainActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     public void checksd() {
+        Log.e(Main, "2");
         Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
         if (isSDPresent) {
             StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
@@ -79,7 +79,9 @@ public class MainActivity extends ActionBarActivity {
             System.out.println("Megs :" + megAvailable);
             if (megAvailable >= 11) {
                 OneClick();
+                Log.e(Main, "3");
             } else {
+                Log.e(Main, "3b");
                 dialog = new ProgressDialog(this);
                 dialog.setTitle("Not Enough Available Space on SDCard ");
                 dialog.setMessage("Please free at least 12MB on your sdcard. ");
@@ -102,30 +104,30 @@ public class MainActivity extends ActionBarActivity {
                 }, 0, 5, TimeUnit.SECONDS);
             }
         } else {
+            Log.e(Main, "n");
             dialog = new ProgressDialog(this);
             dialog.setTitle("SDCard Unavailable");
             dialog.setMessage("Would you like to try to continue without an SDCard?");
-            dialog.setButton("Yes", new DialogInterface.OnClickListener() {
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     Process p = null;
                     Boolean fake = null;
                     try {
-                        p = Runtime.getRuntime().exec(new String[]{"su", "-c", "mkdir /storage/sdcard0/tmpforfake"});
-                        wait(50);
+                        Log.e(Main, "f1");
+                        //p = Runtime.getRuntime().exec(new String[]{"su", "-c", "mkdir /storage/sdcard0/tmpforfake"});
+                        //wait(50);
                         fake = true;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException el) {
-                        el.printStackTrace();
                     } finally {
                         if (fake == true) {
                             OneClick();
+                            Log.e(Main, "1click");
                         }
                     }
                 }
             });
-            dialog.setButton("No", new DialogInterface.OnClickListener() {
+            Log.e(Main, "f2");
+            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialog = new ProgressDialog(MainActivity.this);
@@ -134,20 +136,24 @@ public class MainActivity extends ActionBarActivity {
                     dialog.setCancelable(true);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.show();
-            final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+                    Log.e(Main, "f3");
+                    final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
             exec.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
                     Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                     if (isSDPresent) {
+                        Log.e(Main, "f4");
                         dialog.dismiss();
                         checksd();
                         exec.shutdown();
+                        Log.e(Main, "f5");
                     }
                     }
             }, 0, 5, TimeUnit.SECONDS);
                 }
             });
+            dialog.show();
         }
     }
 
