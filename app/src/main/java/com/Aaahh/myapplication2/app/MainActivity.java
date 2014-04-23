@@ -1,6 +1,5 @@
 package com.Aaahh.myapplication2.app;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -12,6 +11,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.StatFs;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import static android.content.Intent.ACTION_VIEW;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     private static final String Main = "MainActivity";
     private Handler handler;
@@ -42,6 +42,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new PlaceholderFragment())
+                    .commit();
         }
         checksd();
     }
