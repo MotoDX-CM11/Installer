@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import static android.content.Intent.ACTION_VIEW;
 
-@SuppressWarnings("ALL")
 public class MainActivity extends ActionBarActivity {
 
     private static final String Main = "MainActivity";
@@ -83,7 +82,7 @@ public class MainActivity extends ActionBarActivity {
                 Log.e(Main, "3");
             } else {
                 Log.e(Main, "3b");
-                dialog = new ProgressDialog(this);
+                dialog = new ProgressDialog(MainActivity.this);
                 dialog.setTitle("Not Enough Available Space on SDCard ");
                 dialog.setMessage("Please free at least 12MB on your sdcard. ");
                 dialog.setCancelable(true);
@@ -106,7 +105,7 @@ public class MainActivity extends ActionBarActivity {
             }
         } else {
             Log.e(Main, "n");
-            dialog = new ProgressDialog(this);
+            dialog = new ProgressDialog(MainActivity.this);
             dialog.setTitle("SDCard Unavailable");
             dialog.setMessage("Would you like to try to continue without an SDCard?");
             dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
@@ -148,7 +147,7 @@ public class MainActivity extends ActionBarActivity {
                             Log.e(Main, "Failed to use fake sdcard");
 
                         }
-                        if (fake == true) {
+                        if (fake) {
                             OneClick();
                             Log.e(Main, "1click");
                         }
@@ -196,8 +195,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public boolean checkRootMethod3() {
+        Process p;
         try {
-            Process p = Runtime.getRuntime().exec(String.valueOf(Runtime.getRuntime().exec(new String[]{"/system/xbin/which", "su"})));
+            p = Runtime.getRuntime().exec(String.valueOf(Runtime.getRuntime().exec(new String[]{"/system/xbin/which", "su"})));
+            p.waitFor();
             return Boolean.parseBoolean(String.valueOf(true));
         } catch (Exception e) {
             return Boolean.parseBoolean(String.valueOf(false));
@@ -235,7 +236,7 @@ public class MainActivity extends ActionBarActivity {
             startActivity(LaunchIntent);
         }
         if (reqCode != 1) {
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(MainActivity.this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Framaroot not installed")
                     .setMessage("Do you want to try installing again?")
@@ -281,7 +282,7 @@ public class MainActivity extends ActionBarActivity {
             // to a file. That doesn't appear to be the case. If the returned array is
             // null or has 0 length, we assume the path is to a file. This means empty
             // directories will get turned into files.
-            if (contents == null || contents.length == 0)
+            if (contents.length == 0)
                 throw new IOException();
 
             // Make the directory.
@@ -323,7 +324,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void buttonOnClick3(View v3) {
-        dialog = new ProgressDialog(this);
+        dialog = new ProgressDialog(MainActivity.this);
         dialog.setTitle("Loading");
         dialog.setMessage("Please wait...");
         dialog.setCancelable(false);
@@ -334,7 +335,7 @@ public class MainActivity extends ActionBarActivity {
         execq.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                if (copyAsset("system") == true) {
+                if (copyAsset("system")) {
                     execq.shutdown();
                 }
             }
@@ -351,7 +352,7 @@ public class MainActivity extends ActionBarActivity {
                 Process b = null;
                 Process c = null;
                 Process d = null;
-                boolean system = false;
+                boolean system;
 
                 try {
                     p = Runtime.getRuntime().exec(new String[]{"su", "-c", "mount -o rw,remount /dev/block/mmcblk1p21 /system"});
@@ -361,7 +362,7 @@ public class MainActivity extends ActionBarActivity {
                     system = false;
                 }
                 try {
-                    if (system == true) {
+                    if (system) {
                         a = Runtime.getRuntime().exec(new String[]{"su", "-c", "cp", "-r " + getExternalFilesDir(null) + "/system/* /system"});
                         c = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "-R", "755", "/system/bin/logwrapper"});
                         b = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod", "-R", "755", "/system/bootstrap"});
@@ -372,11 +373,21 @@ public class MainActivity extends ActionBarActivity {
                     e.printStackTrace();
                 }
                 try {
-                    p.waitFor();
-                    a.waitFor();
-                    b.waitFor();
-                    c.waitFor();
-                    d.waitFor();
+                    if (p != null) {
+                        p.waitFor();
+                    }
+                    if (a != null) {
+                        a.waitFor();
+                    }
+                    if (b != null) {
+                        b.waitFor();
+                    }
+                    if (c != null) {
+                        c.waitFor();
+                    }
+                    if (d != null) {
+                        d.waitFor();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -391,54 +402,70 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void buttonOnClick4(View v4) {
+        Process p;
         try {
-            Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot recovery"});
+            p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot recovery"});
+            p.waitFor();
         } catch (IOException e) {
             e.printStackTrace();
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(MainActivity.this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Rebooting Failed")
                     .setMessage("Did you grant root?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            Process p;
                             try {
-                                Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot recovery"});
+                                p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot recovery"});
+                                p.waitFor();
                             } catch (IOException e) {
                                 e.printStackTrace();
+                            } catch (InterruptedException e1) {
+                                e1.printStackTrace();
                             }
                         }
 
                     })
                     .setNegativeButton("No", null)
                     .show();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
     public void buttonOnClick5(View v5) {
+        Process p;
         try {
-            Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot"});
+            p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot"});
+            p.waitFor();
         } catch (IOException e) {
             e.printStackTrace();
-                new AlertDialog.Builder(this)
+            new AlertDialog.Builder(MainActivity.this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Rebooting Failed")
                         .setMessage("Did you grant root?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                Process p;
                                 try {
-                                    Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot"});
+                                    p = Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot"});
+                                    p.waitFor();
                                 } catch (IOException e) {
                                     e.printStackTrace();
+                                } catch (InterruptedException e1) {
+                                    e1.printStackTrace();
                                 }
                             }
 
                         })
                         .setNegativeButton("No", null)
                         .show();
-            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+    }
 
 
     public void OneClick() {
@@ -446,7 +473,7 @@ public class MainActivity extends ActionBarActivity {
         builder.setMessage("Want to try the OneClick (like) method?")
                 .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        if (isDeviceRooted() != true) {
+                        if (!isDeviceRooted()) {
                             try {
                                 buttonOnClick1(null);
                                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
