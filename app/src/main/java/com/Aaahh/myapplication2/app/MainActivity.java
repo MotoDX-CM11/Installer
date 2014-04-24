@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import static android.content.Intent.ACTION_VIEW;
 
+@SuppressWarnings("ALL")
 public class MainActivity extends ActionBarActivity {
 
     private static final String Main = "MainActivity";
@@ -111,14 +112,42 @@ public class MainActivity extends ActionBarActivity {
             dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Process p = null;
+                    Process p1 = null;
+                    Process p2 = null;
+                    Process p3 = null;
+                    Process p4 = null;
                     Boolean fake = null;
                     try {
                         Log.e(Main, "f1");
-                        //p = Runtime.getRuntime().exec(new String[]{"su", "-c", "mkdir /storage/sdcard0/tmpforfake"});
-                        //wait(50);
+                        p1 = Runtime.getRuntime().exec(new String[]{"su", "-c", "mv /sdcard /sdcardreal "});
+                        p3 = Runtime.getRuntime().exec(new String[]{"su", "-c", "mv /storage/sdcard0 /storage/sdcard0real"});
+                        p2 = Runtime.getRuntime().exec(new String[]{"su", "-c", "mkdir  /sdcard "});
+                        p4 = Runtime.getRuntime().exec(new String[]{"su", "-c", "mkdir /storage/sdcard0"});
+                        wait(50);
                         fake = true;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     } finally {
+                        try {
+                            if (p1 != null) {
+                                p1.waitFor();
+                            }
+                            if (p2 != null) {
+                                p2.waitFor();
+                            }
+                            if (p3 != null) {
+                                p3.waitFor();
+                            }
+                            if (p4 != null) {
+                                p4.waitFor();
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Log.e(Main, "Failed to use fake sdcard");
+
+                        }
                         if (fake == true) {
                             OneClick();
                             Log.e(Main, "1click");
