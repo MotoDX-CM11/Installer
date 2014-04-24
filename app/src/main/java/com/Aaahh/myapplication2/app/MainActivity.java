@@ -411,7 +411,7 @@ public class MainActivity extends ActionBarActivity {
             new AlertDialog.Builder(MainActivity.this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Rebooting Failed")
-                    .setMessage("Did you grant root?")
+                    .setMessage("Do you want to try again?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -444,7 +444,7 @@ public class MainActivity extends ActionBarActivity {
             new AlertDialog.Builder(MainActivity.this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Rebooting Failed")
-                        .setMessage("Did you grant root?")
+                    .setMessage("Do you want to try again?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
