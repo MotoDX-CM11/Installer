@@ -41,7 +41,6 @@ public class SimpleFileDialog {
     private int FolderChoose = 2;
     private String m_sdcardDirectory = "";
     private Context m_context;
-    private TextView m_titleView1;
     private TextView m_titleView;
     private EditText input_text;
 
@@ -62,7 +61,7 @@ public class SimpleFileDialog {
 
         try {
             m_sdcardDirectory = new File(m_sdcardDirectory).getCanonicalPath();
-        } catch (IOException ioe) {
+        } catch (IOException ignored) {
         }
     }
 
@@ -148,8 +147,7 @@ public class SimpleFileDialog {
 
     private boolean createSubDir(String newDir) {
         File newDirFile = new File(newDir);
-        if (!newDirFile.exists()) return newDirFile.mkdir();
-        else return false;
+        return !newDirFile.exists() && newDirFile.mkdir();
     }
 
     private List<String> getDirectories(String dir) {
@@ -173,7 +171,7 @@ public class SimpleFileDialog {
                     dirs.add(file.getName());
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         Collections.sort(dirs, new Comparator<String>() {
@@ -193,7 +191,7 @@ public class SimpleFileDialog {
         ////////////////////////////////////////////////
         // Create title text showing file select type //
         ////////////////////////////////////////////////
-        m_titleView1 = new TextView(m_context);
+        TextView m_titleView1 = new TextView(m_context);
         m_titleView1.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         //m_titleView1.setTextAppearance(m_context, android.R.style.TextAppearance_Large);
         //m_titleView1.setTextColor( m_context.getResources().getColor(android.R.color.black) );
