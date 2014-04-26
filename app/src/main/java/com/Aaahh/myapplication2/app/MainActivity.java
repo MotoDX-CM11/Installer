@@ -132,7 +132,6 @@ public class MainActivity extends ActionBarActivity {
                         if (megAvailable >= 11) {
                             dialog.dismiss();
                             Sdcard = true;
-                            OneClick();
                             if (OneClick()) {
                                 exec.shutdown();
                             }
@@ -164,6 +163,7 @@ public class MainActivity extends ActionBarActivity {
                         if (megAvailable >= 11) {
                             Sdcard = true;
                             Log.e(Main, "3");
+                            OneClick();
                         } else {
                             Log.e(Main, "3b");
                             dialog = new ProgressDialog(MainActivity.this);
@@ -183,7 +183,10 @@ public class MainActivity extends ActionBarActivity {
                                     if (megAvailable >= 11) {
                                         dialog.dismiss();
                                         Sdcard = true;
-                                        exec.shutdown();
+                                        OneClick();
+                                        if (OneClick()) {
+                                            exec.shutdown();
+                                        }
                                     }
                                 }
                             }, 0, 5, TimeUnit.SECONDS);
@@ -201,7 +204,7 @@ public class MainActivity extends ActionBarActivity {
         return available();
     }
 
-    public void buttonOnClick1(View v1) throws IOException, InterruptedException {
+    public void buttonOnClick1(View v1) throws IOException {
         try {
             Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage("com.alephzain.framaroot");
             startActivity(LaunchIntent);
@@ -265,8 +268,6 @@ public class MainActivity extends ActionBarActivity {
                             try {
                                 buttonOnClick1(null);
                             } catch (IOException e) {
-                                e.printStackTrace();
-                            } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -545,6 +546,7 @@ public class MainActivity extends ActionBarActivity {
 
 
     public boolean OneClick() {
+        Log.e(Main, "oc");
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setMessage("Want to try the OneClick method? (Experimental)")
                 .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
@@ -563,8 +565,6 @@ public class MainActivity extends ActionBarActivity {
                                         .show();
                             } catch (IOException e) {
                                 e.printStackTrace();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
                             }
                         } else {
                             new AlertDialog.Builder(MainActivity.this)
@@ -582,9 +582,10 @@ public class MainActivity extends ActionBarActivity {
                         }
                                 try {
                                     buttonOnClick3(null);
-                                    Thread.sleep(60000);
                                     File file = new File("/system/bootmenu/recovery.sh");
                                     File logwrapper = new File("/system/bin/logwrapper");
+                                    Thread.currentThread();
+                                    Thread.sleep(60000);
                                     if (file.exists()) {
                                         if (logwrapper.exists()) {
                                             Thread.currentThread().interrupt();
