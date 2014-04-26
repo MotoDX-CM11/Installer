@@ -406,16 +406,22 @@ public class MainActivity extends ActionBarActivity {
             dialog.setCancelable(false);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.show();
-            copyAsset("system");
-            final ScheduledExecutorService execq = Executors.newSingleThreadScheduledExecutor();
-            execq.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    if (copyAsset("system")) {
-                        execq.shutdown();
-                    }
+            File file = new File("/system/bootmenu/recovery.sh");
+            File logwrapper = new File("/system/bin/logwrapper");
+            if (!file.exists()) {
+                if (!logwrapper.exists()) {
+                    copyAsset("system");
+                    final ScheduledExecutorService execq = Executors.newSingleThreadScheduledExecutor();
+                    execq.scheduleAtFixedRate(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (copyAsset("system")) {
+                                execq.shutdown();
+                            }
+                        }
+                    }, 0, 5, TimeUnit.SECONDS);
                 }
-            }, 0, 5, TimeUnit.SECONDS);
+            }
             new Thread() {
                 public void run() {
                     try {
