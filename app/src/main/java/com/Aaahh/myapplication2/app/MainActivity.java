@@ -575,7 +575,7 @@ public class MainActivity extends ActionBarActivity {
                                     .setNegativeButton("Cancel Install", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int id) {
-                                            Thread.yield();
+                                            Thread.currentThread().yield();
                                         }
                                     })
                                     .show();
