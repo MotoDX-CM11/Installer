@@ -110,7 +110,6 @@ public class MainActivity extends ActionBarActivity {
             long megAvailable = bytesAvailable / 1048576;
             System.out.println("Megs :" + megAvailable);
             if (megAvailable >= 11) {
-                OneClick();
                 Sdcard = true;
                 Log.e(Main, "3");
             } else {
@@ -132,9 +131,7 @@ public class MainActivity extends ActionBarActivity {
                         if (megAvailable >= 11) {
                             dialog.dismiss();
                             Sdcard = true;
-                            if (OneClick()) {
-                                exec.shutdown();
-                            }
+                            exec.shutdown();
                         }
                     }
                 }, 0, 5, TimeUnit.SECONDS);
@@ -163,7 +160,7 @@ public class MainActivity extends ActionBarActivity {
                         if (megAvailable >= 11) {
                             Sdcard = true;
                             Log.e(Main, "3");
-                            OneClick();
+                            exec.shutdown();
                         } else {
                             Log.e(Main, "3b");
                             dialog = new ProgressDialog(MainActivity.this);
@@ -183,10 +180,7 @@ public class MainActivity extends ActionBarActivity {
                                     if (megAvailable >= 11) {
                                         dialog.dismiss();
                                         Sdcard = true;
-                                        OneClick();
-                                        if (OneClick()) {
-                                            exec.shutdown();
-                                        }
+                                        exec.shutdown();
                                     }
                                 }
                             }, 0, 5, TimeUnit.SECONDS);
