@@ -264,6 +264,13 @@ public class MainActivity extends ActionBarActivity {
             if (file.exists()) {
             intent.setDataAndType(Uri.fromFile(new File(getExternalFilesDir(null) + "/framaroot.apk")), "application/vnd.android.package-archive");
             startActivityForResult(intent, 1);
+            } else {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Sdcard Unavailable")
+                        .setMessage("An sdcard is needed to install the rooting app at this time. Please try with an sdcard or use 'adb install framaroot.apk' from your pc.")
+                        .setPositiveButton("Okay", null)
+                        .show();
             }
         }
     }
@@ -548,6 +555,12 @@ public class MainActivity extends ActionBarActivity {
                                     .setTitle("Notice")
                                     .setMessage("Please make sure you have the rom on your sdcard.")
                                     .setPositiveButton("Okay", null)
+                                    .setNegativeButton("Cancel Install", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            Thread.yield();
+                                        }
+                                    })
                                     .show();
                         }
                         try {
