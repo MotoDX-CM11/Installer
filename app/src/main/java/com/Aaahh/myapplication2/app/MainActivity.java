@@ -522,7 +522,7 @@ public class MainActivity extends ActionBarActivity {
 
     public boolean OneClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage("Want to try the OneClick method?")
+        builder.setMessage("Want to try the OneClick method? (Experimental)")
                 .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         if (!isDeviceRooted()) {
@@ -542,6 +542,13 @@ public class MainActivity extends ActionBarActivity {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
+                        } else {
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setTitle("Notice")
+                                    .setMessage("Please make sure you have the rom on your sdcard.")
+                                    .setPositiveButton("Okay", null)
+                                    .show();
                         }
                         try {
                             buttonOnClick3(null);
