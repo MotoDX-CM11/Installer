@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,6 +34,8 @@ import static android.content.Intent.ACTION_VIEW;
 public class MainActivity extends ActionBarActivity {
 
     private static final String Main = "MainActivity";
+    public boolean Sdcard;
+    public boolean fake;
     private Handler handler;
     private ProgressDialog dialog;
 
@@ -79,6 +81,7 @@ public class MainActivity extends ActionBarActivity {
             System.out.println("Megs :" + megAvailable);
             if (megAvailable >= 11) {
                 OneClick();
+                Sdcard = true;
                 Log.e(Main, "3");
             } else {
                 Log.e(Main, "3b");
@@ -98,7 +101,11 @@ public class MainActivity extends ActionBarActivity {
                         System.out.println("Megs :" + megAvailable);
                         if (megAvailable >= 11) {
                             dialog.dismiss();
-                            exec.shutdown();
+                            Sdcard = true;
+                            OneClick();
+                            if (OneClick()) {
+                                exec.shutdown();
+                            }
                         }
                     }
                 }, 0, 5, TimeUnit.SECONDS);
@@ -107,7 +114,7 @@ public class MainActivity extends ActionBarActivity {
             Log.e(Main, "n");
             dialog = new ProgressDialog(MainActivity.this);
             dialog.setTitle("SDCard Unavailable");
-            dialog.setMessage("Would you like to try to continue without an SDCard?");
+            dialog.setMessage("Would you like to try to continue without an SDCard? Requires root, to skip this click the back button.");
             dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -115,17 +122,13 @@ public class MainActivity extends ActionBarActivity {
                     Process p2 = null;
                     Process p3 = null;
                     Process p4 = null;
-                    Boolean fake = null;
                     try {
                         Log.e(Main, "f1");
                         p1 = Runtime.getRuntime().exec(new String[]{"su", "-c", "mv /sdcard /sdcardreal "});
                         p3 = Runtime.getRuntime().exec(new String[]{"su", "-c", "mv /storage/sdcard0 /storage/sdcard0real"});
                         p2 = Runtime.getRuntime().exec(new String[]{"su", "-c", "mkdir  /sdcard "});
                         p4 = Runtime.getRuntime().exec(new String[]{"su", "-c", "mkdir /storage/sdcard0"});
-                        wait(50);
                         fake = true;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
@@ -149,6 +152,7 @@ public class MainActivity extends ActionBarActivity {
                         }
                         if (fake) {
                             OneClick();
+                            Sdcard = true;
                             Log.e(Main, "1click");
                         }
                     }
@@ -173,7 +177,38 @@ public class MainActivity extends ActionBarActivity {
                     if (isSDPresent) {
                         Log.e(Main, "f4");
                         dialog.dismiss();
-                        checksd();
+                        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+                        long bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
+                        long megAvailable = bytesAvailable / 1048576;
+                        System.out.println("Megs :" + megAvailable);
+                        if (megAvailable >= 11) {
+                            OneClick();
+                            Sdcard = true;
+                            Log.e(Main, "3");
+                        } else {
+                            Log.e(Main, "3b");
+                            dialog = new ProgressDialog(MainActivity.this);
+                            dialog.setTitle("Not Enough Available Space on SDCard ");
+                            dialog.setMessage("Please free at least 12MB on your sdcard. ");
+                            dialog.setCancelable(true);
+                            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            dialog.show();
+                            final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+                            exec.scheduleAtFixedRate(new Runnable() {
+                                @Override
+                                public void run() {
+                                    StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+                                    long bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
+                                    long megAvailable = bytesAvailable / 1048576;
+                                    System.out.println("Megs :" + megAvailable);
+                                    if (megAvailable >= 11) {
+                                        dialog.dismiss();
+                                        Sdcard = true;
+                                        exec.shutdown();
+                                    }
+                                }
+                            }, 0, 5, TimeUnit.SECONDS);
+                        }
                         exec.shutdown();
                         Log.e(Main, "f5");
                     }
@@ -225,15 +260,32 @@ public class MainActivity extends ActionBarActivity {
             out.flush();
             out.close();
             Intent intent = new Intent(Intent.ACTION_VIEW);
+            File file = new File(getExternalFilesDir(null) + "/framaroot.apk");
+            if (file.exists()) {
             intent.setDataAndType(Uri.fromFile(new File(getExternalFilesDir(null) + "/framaroot.apk")), "application/vnd.android.package-archive");
             startActivityForResult(intent, 1);
+            }
         }
     }
 
     protected void onActivityResult(int reqCode, int resultCode, Intent intent) {
         if (reqCode == 1) {
-            Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage("com.alephzain.framaroot");
-            startActivity(LaunchIntent);
+            Intent i;
+            PackageManager manager = getPackageManager();
+            try {
+                i = manager.getLaunchIntentForPackage("com.alephzain.framaroot");
+                if (i == null)
+                    throw new PackageManager.NameNotFoundException();
+                i.addCategory(Intent.CATEGORY_LAUNCHER);
+                startActivity(i);
+            } catch (PackageManager.NameNotFoundException e) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Framaroot can't be found.")
+                        .setMessage("Please restart and try again.")
+                        .setPositiveButton("Okay", null)
+                        .show();
+            }
         }
         if (reqCode != 1) {
             new AlertDialog.Builder(MainActivity.this)
@@ -468,9 +520,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    public void OneClick() {
+    public boolean OneClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage("Want to try the OneClick (like) method?")
+        builder.setMessage("Want to try the OneClick method?")
                 .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         if (!isDeviceRooted()) {
@@ -490,49 +542,34 @@ public class MainActivity extends ActionBarActivity {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-
                         }
-                        buttonOnClick3(null);
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setMessage("Select your ROM, Gapps, and any other zip")
-                                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                                    String m_chosen;
-
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        //Create FileOpenDialog and register a callback
-                                        SimpleFileDialog FileOpenDialog = new SimpleFileDialog(MainActivity.this, "FileOpen",
-                                                new SimpleFileDialog.SimpleFileDialogListener() {
-                                                    @Override
-                                                    public void onChosenDir(String chosenDir) {
-                                                        // The code in this function will be executed when the dialog OK button is pushed
-                                                        m_chosen = chosenDir;
-                                                        Toast.makeText(MainActivity.this, "Chosen FileOpenDialog File: " +
-                                                                m_chosen, Toast.LENGTH_LONG).show();
-                                                    }
-                                                }
-                                        );
-
-                                        //You can change the default filename using the public variable "Default_File_Name"
-                                        FileOpenDialog.Default_File_Name = "*.zip";
-                                        FileOpenDialog.chooseFile_or_Dir();
-                                    }
-
-                                    public boolean onCreateOptionsMenu(Menu menu) {
-                                        // Inflate the menu; this adds items to the action bar if it is present.
-                                        getMenuInflater().inflate(R.menu.main, menu);
-                                        return true;
-                                    }
-                                })
-                                .setNegativeButton("No", null)
+                        try {
+                            buttonOnClick3(null);
+                            Thread.sleep(60000);
+                            File file = new File("/system/bootmenu/recovery.sh");
+                            File logwrapper = new File("/system/bin/logwrapper");
+                            if (file.exists()) {
+                                if (logwrapper.exists()) {
+                                    Thread.currentThread().interrupt();
+                                }
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Thread.currentThread().interrupt();
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setTitle("Bootstrap not installed")
+                                    .setMessage("Please restart and try again.")
+                                    .setPositiveButton("Okay", null)
                                 .show();
                     }
-                });
+                    }
+                })
+                .setNegativeButton("No Thanks", null)
+                .show();
+        return true;
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class PlaceholderFragment extends Fragment {
 
         public PlaceholderFragment() {
