@@ -394,7 +394,7 @@ public class MainActivity extends ActionBarActivity {
             });
             dialog.show();
         } else {
-            dialog = new ProgressDialog(this);
+            dialog = new ProgressDialog(MainActivity.this);
             dialog.setTitle("Loading");
             dialog.setMessage("Please wait...");
             dialog.setCancelable(false);
