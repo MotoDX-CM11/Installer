@@ -130,4 +130,13 @@
         android:layout_below="@+id/textView"
         android:text=" 8.Install and reboot" />
 
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView6"
+        android:layout_alignRight="@+id/textView8"
+        android:onClick="buttonOnClick6"
+        android:text="OneClick Install" />
+
 </RelativeLayout>

@@ -133,4 +133,14 @@
         android:layout_below="@+id/textView8"
         android:text=" 7.Select your Rom and Gapps" />
 
+    <Button
+        android:id="@+id/button6"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView3"
+        android:layout_toRightOf="@+id/textView3"
+        android:onClick="buttonOnClick6"
+        android:text="OneClick        Install" />
+
 </RelativeLayout>

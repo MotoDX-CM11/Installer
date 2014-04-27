@@ -538,8 +538,11 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    public void buttonOnClick6(View v6) {
+        OneClick();
+    }
 
-    public boolean OneClick() {
+    public void OneClick() {
         Log.e(Main, "oc");
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setMessage("Want to try the OneClick method? (Experimental)")
