@@ -103,20 +103,12 @@
         android:text=" 4.Reboot" />
 
     <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView5"
-        android:text=" 5.Click Menu button on prompt" />
-
-    <TextView
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView6"
-        android:text=" 6.Wipe system and cache" />
+        android:layout_below="@+id/textView5"
+        android:text=" 5.Wipe system and cache" />
 
     <TextView
         android:id="@+id/textView8"
@@ -124,14 +116,21 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/textView7"
-        android:text=' 7.Select "Install" and select your zips' />
+        android:text=' 6.Select "Install"' />
 
     <TextView
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/button2"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView8"
         android:text=" 8.Install and reboot" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView8"
+        android:text=" 7.Select your Rom and Gapps" />
 
 </RelativeLayout>
