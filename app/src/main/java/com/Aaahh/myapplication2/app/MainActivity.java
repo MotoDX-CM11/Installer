@@ -564,38 +564,31 @@ public class MainActivity extends ActionBarActivity {
                             new AlertDialog.Builder(MainActivity.this)
                                     .setIcon(android.R.drawable.ic_dialog_alert)
                                     .setTitle("Notice")
-                                    .setMessage("Please make sure you have the rom on your sdcard.")
+                                    .setMessage("Please make sure you have the Rom on your sdcard.")
                                     .setPositiveButton("Okay", null)
                                     .setNegativeButton("Cancel Install", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int id) {
-                                            Thread.currentThread().yield();
+                                            System.exit(0);
                                         }
                                     })
                                     .show();
                         }
-                                try {
-                                    buttonOnClick3(null);
-                                    File file = new File("/system/bootmenu/recovery.sh");
-                                    File logwrapper = new File("/system/bin/logwrapper");
-                                    Thread.currentThread();
-                                    Thread.sleep(60000);
-                                    if (file.exists()) {
-                                        if (logwrapper.exists()) {
-                                            Thread.currentThread().interrupt();
-                                        }
+                        buttonOnClick3(null);
+                        final ScheduledExecutorService execq = Executors.newSingleThreadScheduledExecutor();
+                        execq.scheduleAtFixedRate(new Runnable() {
+                            @Override
+                            public void run() {
+                                File file = new File("/system/bootmenu/recovery.sh");
+                                File logwrapper = new File("/system/bin/logwrapper");
+                                if (file.exists()) {
+                                    if (logwrapper.exists()) {
+                                        execq.shutdown();
                                     }
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                    Thread.currentThread().interrupt();
-                                    new AlertDialog.Builder(MainActivity.this)
-                                            .setIcon(android.R.drawable.ic_dialog_alert)
-                                            .setTitle("Bootstrap not installed")
-                                            .setMessage("Please restart and try again.")
-                                            .setPositiveButton("Okay", null)
-                                            .show();
                                 }
                             }
+                        }, 0, 5, TimeUnit.SECONDS);
+                    }
                         })
                 .setNegativeButton("No Thanks", null)
                         .show();
