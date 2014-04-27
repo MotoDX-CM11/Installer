@@ -219,8 +219,8 @@ public class MainActivity extends ActionBarActivity {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             File file = new File(getExternalFilesDir(null) + "/framaroot.apk");
             if (file.exists()) {
-            intent.setDataAndType(Uri.fromFile(new File(getExternalFilesDir(null) + "/framaroot.apk")), "application/vnd.android.package-archive");
-            startActivityForResult(intent, 1);
+                intent.setDataAndType(Uri.fromFile(new File(getExternalFilesDir(null) + "/framaroot.apk")), "application/vnd.android.package-archive");
+                startActivityForResult(intent, 1);
             } else {
                 new AlertDialog.Builder(MainActivity.this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
@@ -500,10 +500,10 @@ public class MainActivity extends ActionBarActivity {
                     })
                     .setNegativeButton("No", null)
                     .show();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void buttonOnClick5(View v5) {
         Process p;
@@ -592,10 +592,9 @@ public class MainActivity extends ActionBarActivity {
                             }
                         }, 0, 5, TimeUnit.SECONDS);
                     }
-                        })
+                })
                 .setNegativeButton("No Thanks", null)
-                        .show();
-        return true;
+                .show();
     }
 
     public static class PlaceholderFragment extends Fragment {
@@ -610,4 +609,4 @@ public class MainActivity extends ActionBarActivity {
             return rootView;
         }
     }
-        }
+}
