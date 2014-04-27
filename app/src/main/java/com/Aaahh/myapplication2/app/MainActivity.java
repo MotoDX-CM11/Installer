@@ -388,34 +388,28 @@ public class MainActivity extends ActionBarActivity {
 
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    Thread.currentThread();
                     Thread.yield();
                 }
             });
             dialog.show();
         } else {
-            dialog.show();
-            dialog = new ProgressDialog(MainActivity.this);
+            dialog = new ProgressDialog(this);
             dialog.setTitle("Loading");
             dialog.setMessage("Please wait...");
             dialog.setCancelable(false);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.show();
-            File file = new File("/system/bootmenu/recovery.sh");
-            File logwrapper = new File("/system/bin/logwrapper");
-            if (!file.exists()) {
-                if (!logwrapper.exists()) {
-                    copyAsset("system");
-                    final ScheduledExecutorService execq = Executors.newSingleThreadScheduledExecutor();
-                    execq.scheduleAtFixedRate(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (copyAsset("system")) {
-                                execq.shutdown();
-                            }
-                        }
-                    }, 0, 5, TimeUnit.SECONDS);
+            copyAsset("system");
+            final ScheduledExecutorService execq = Executors.newSingleThreadScheduledExecutor();
+            execq.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    if (copyAsset("system")) {
+                        execq.shutdown();
+                    }
                 }
-            }
+            }, 0, 5, TimeUnit.SECONDS);
             new Thread() {
                 public void run() {
                     try {
