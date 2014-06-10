@@ -582,7 +582,7 @@ public class MainActivity extends ActionBarActivity {
                                     .setTitle("Notice")
                                     .setMessage("Please make sure you have the Rom on your sdcard.")
                                     .setPositiveButton("Okay", null)
-                                    .setNegativeButton("Cancel Install", new DialogInterface.OnClickListener() {
+                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int id) {
                                             System.exit(0);
@@ -596,17 +596,19 @@ public class MainActivity extends ActionBarActivity {
                             @Override
                             public void run() {
                                 File file = new File("/system/bootmenu/recovery.sh");
-                                File logwrapper = new File("/system/bin/logwrapper");
                                 if (file.exists()) {
-                                    if (logwrapper.exists()) {
                                         execq.shutdown();
-                                    }
                                 }
                             }
                         }, 0, 5, TimeUnit.SECONDS);
                     }
                 })
-                .setNegativeButton("No Thanks", null)
+                .setNegativeButton("No Thanks", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialog.dismiss();
+                    }
+                })
                 .show();
     }
 
