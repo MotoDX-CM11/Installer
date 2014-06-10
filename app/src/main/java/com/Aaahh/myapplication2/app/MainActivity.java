@@ -102,7 +102,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void checksd() {
-        Log.e(Main, "2");
+        Log.e(Main, "checksd Start");
         Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
         if (isSDPresent) {
             StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
@@ -111,7 +111,7 @@ public class MainActivity extends ActionBarActivity {
             System.out.println("Megs :" + megAvailable);
             if (megAvailable >= 11) {
                 Sdcard = true;
-                Log.e(Main, "3");
+                Log.e(Main, "sdcard here and big enough");
             } else {
                 Log.e(Main, "3b");
                 dialog = new ProgressDialog(MainActivity.this);
@@ -137,21 +137,21 @@ public class MainActivity extends ActionBarActivity {
                 }, 0, 5, TimeUnit.SECONDS);
             }
         } else {
-            Log.e(Main, "f2");
+            Log.e(Main, "sdcard not present");
             dialog = new ProgressDialog(MainActivity.this);
             dialog.setTitle("SDCard Unavailable");
             dialog.setMessage("Please insert an SDCard and/or unplug your usb cable.");
             dialog.setCancelable(true);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.show();
-            Log.e(Main, "f3");
+            Log.e(Main, "constant checking");
             final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
             exec.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
                     Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                     if (isSDPresent) {
-                        Log.e(Main, "f4");
+                        Log.e(Main, "sd here, check space");
                         dialog.dismiss();
                         StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
                         long bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
@@ -162,10 +162,10 @@ public class MainActivity extends ActionBarActivity {
                             Log.e(Main, "3");
                             exec.shutdown();
                         } else {
-                            Log.e(Main, "3b");
+                            Log.e(Main, "not enough space on sd");
                             dialog = new ProgressDialog(MainActivity.this);
-                            dialog.setTitle("Not Enough Available Space on SDCard ");
-                            dialog.setMessage("Please free at least 12MB on your sdcard. ");
+                            dialog.setTitle("Not Enough Available Space on SDCard");
+                            dialog.setMessage("Please free at least 12MB on your sdcard.");
                             dialog.setCancelable(true);
                             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                             dialog.show();
@@ -186,7 +186,7 @@ public class MainActivity extends ActionBarActivity {
                             }, 0, 5, TimeUnit.SECONDS);
                         }
                         exec.shutdown();
-                        Log.e(Main, "f5");
+                        Log.e(Main, "sdcard wasn't there, but now is");
                     }
                 }
             }, 0, 5, TimeUnit.SECONDS);
@@ -379,17 +379,28 @@ public class MainActivity extends ActionBarActivity {
                         }
                         if (fake) {
                             Sdcard = true;
-                            Log.e(Main, "1click");
+                            Log.e(Main, "fakesdcard");
                         }
                     }
+
+                    dialog = new ProgressDialog(MainActivity.this);
+                    dialog.setTitle("Try Agian");
+                    dialog.setMessage("Please try to install bootstrap again.");
+                    dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Okay", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
                 }
             });
             dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Thread.currentThread();
-                    Thread.yield();
+                    dialog.dismiss();
                 }
             });
             dialog.show();
@@ -400,23 +411,25 @@ public class MainActivity extends ActionBarActivity {
             dialog.setCancelable(false);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.show();
-            copyAsset("system");
-            final ScheduledExecutorService execq = Executors.newSingleThreadScheduledExecutor();
-            execq.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    if (copyAsset("system")) {
-                        execq.shutdown();
+            //check the last file to be copied.
+            File f = new File((getExternalFilesDir(null) + "/system/bootstrap/script/recovery.sh"));
+            if (!f.exists()) {
+                copyAsset("system");
+                //check if done
+                final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+                exec.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        File f = new File((getExternalFilesDir(null) + "/system/bootstrap/script/recovery.sh"));
+                        if (f.exists()) {
+                            exec.shutdown();
+                        }
                     }
-                }
-            }, 0, 5, TimeUnit.SECONDS);
+                }, 0, 5, TimeUnit.SECONDS);
+            }
+
             new Thread() {
                 public void run() {
-                    try {
-                        sleep(60);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                     Process p = null;
                     Process a = null;
                     Process b = null;
