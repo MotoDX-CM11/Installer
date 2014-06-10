@@ -303,7 +303,7 @@ public class MainActivity extends ActionBarActivity {
             File dir = new File(getExternalFilesDir(null), path);
             dir.mkdirs();
 
-            // Recurse on the contents.
+            // Recurs on the contents.
             for (String entry : contents) {
                 copyAsset(path + "/" + entry);
             }
