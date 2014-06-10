@@ -138,8 +138,8 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView3"
-        android:layout_toRightOf="@+id/textView3"
+        android:layout_above="@+id/textView8"
+        android:layout_toRightOf="@+id/textView6"
         android:onClick="buttonOnClick6"
         android:text="OneClick        Install" />
 
