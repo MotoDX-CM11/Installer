@@ -44,8 +44,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/button5"
+        android:layout_alignRight="@+id/button3"
+        android:layout_toRightOf="@+id/textView6"
         android:onClick="buttonOnClick5"
         android:text="Reboot" />
 
@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignRight="@+id/textView3"
+        android:layout_toLeftOf="@+id/button4"
         android:onClick="buttonOnClick4"
         android:text="Reboot Recovery" />
 
@@ -133,15 +133,13 @@
         android:text=" 7.Select your Rom and Gapps" />
 
     <Button
-        android:id="@+id/button6"
-        style="?android:attr/buttonStyleSmall"
+        android:id="@+id/button5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button4"
         android:layout_alignParentLeft="true"
-        android:layout_alignRight="@+id/button3"
+        android:layout_alignRight="@+id/button4"
+        android:layout_below="@+id/button3"
         android:onClick="buttonOnClick6"
-        android:singleLine="false"
-        android:text="OneClick Install" />
+        android:text="Auto-Install" />
 
 </RelativeLayout>

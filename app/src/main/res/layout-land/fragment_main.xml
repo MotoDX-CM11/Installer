@@ -138,6 +138,6 @@
         android:layout_above="@+id/button4"
         android:layout_toRightOf="@+id/button"
         android:onClick="buttonOnClick6"
-        android:text="OneClick Install" />
+        android:text="Auto-Install" />
 
 </RelativeLayout>
